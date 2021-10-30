@@ -21,5 +21,5 @@ First, put download datasets and bert-base-uncased. Then, change the path in run
 run python run/main.py
 
 
-> If you have any difficulty or question in running code and reproducing experimental results, please email to shuaiwu18@fudan.edu.cn.
+> If you have any difficulty or question in running code and reproducing experimental results, please leave messages
 
