@@ -16,9 +16,7 @@ SHGAT use Bert to convert attribute-literals into vectors. You should download [
 
 ### Running
 
-First, put download datasets and bert-base-uncased. Then, change the path in run/args/KGAlign_args_15K.json and modules/utils/literal_encoder.py
-
-run python run/main.py
+run python main.py.
 
 
 > If you have any difficulty or question in running code and reproducing experimental results, please leave messages
