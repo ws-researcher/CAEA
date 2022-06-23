@@ -16,7 +16,7 @@ SHGAT use Bert to convert attribute-literals into vectors. You should download [
 
 ### Running
 
-run python main.py.
+run python main.py. In order to improve the training efficiency, the program will first embed the literal representation of the entire KG, which will take a long time. Then start training and testing.
 
 
 > If you have any difficulty or question in running code and reproducing experimental results, please leave messages
