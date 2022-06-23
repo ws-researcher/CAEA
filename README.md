@@ -12,7 +12,7 @@ conda create -n KGAlign python==3.7
 conda activate KGAlign
 pip install  -r requirements.txt
 ```
-SHGAT use Bert to convert attribute-literals into vectors. You should download bert-base-uncased
+SHGAT use Bert to convert attribute-literals into vectors. You should download [bert-base-uncased](https://huggingface.co/bert-base-uncased/tree/main) and save it to bert-base-uncased folder.
 
 ### Running
 
