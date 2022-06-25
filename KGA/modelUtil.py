@@ -52,29 +52,29 @@ def train(args):
                 ent_emb, _ = model(AVH, training=False)
                 CSLS_test(ent_emb, dev_pair)
 
-        # new_pair = []
-        # vec, _ = model(AVH, training=False)
-        # Lvec = np.array([vec[e] for e in rest_set_1])
-        # Rvec = np.array([vec[e] for e in rest_set_2])
-        # Lvec = Lvec / np.linalg.norm(Lvec, axis=-1, keepdims=True)
-        # Rvec = Rvec / np.linalg.norm(Rvec, axis=-1, keepdims=True)
-        # A, _ = eval_alignment_by_sim_mat(Lvec, Rvec, [1, 5, 10], 16, 10, True, False)
-        # B, _ = eval_alignment_by_sim_mat(Rvec, Lvec, [1, 5, 10], 16, 10, True, False)
-        # A = sorted(list(A))
-        # B = sorted(list(B))
-        # for a, b in A:
-        #     if B[b][1] == a:
-        #         new_pair.append([rest_set_1[a], rest_set_2[b]])
-        # print("generate new semi-pairs: %d." % len(new_pair))
-        #
-        # train_pair = np.concatenate([train_pair, np.array(new_pair)], axis=0)
-        # for e1, e2 in new_pair:
-        #     if e1 in rest_set_1:
-        #         rest_set_1.remove(e1)
-        #
-        # for e1, e2 in new_pair:
-        #     if e2 in rest_set_2:
-        #         rest_set_2.remove(e2)
+        new_pair = []
+        vec, _ = model(AVH, training=False)
+        Lvec = np.array([vec[e] for e in rest_set_1])
+        Rvec = np.array([vec[e] for e in rest_set_2])
+        Lvec = Lvec / np.linalg.norm(Lvec, axis=-1, keepdims=True)
+        Rvec = Rvec / np.linalg.norm(Rvec, axis=-1, keepdims=True)
+        A, _ = eval_alignment_by_sim_mat(Lvec, Rvec, [1, 5, 10], 16, 10, True, False)
+        B, _ = eval_alignment_by_sim_mat(Rvec, Lvec, [1, 5, 10], 16, 10, True, False)
+        A = sorted(list(A))
+        B = sorted(list(B))
+        for a, b in A:
+            if B[b][1] == a:
+                new_pair.append([rest_set_1[a], rest_set_2[b]])
+        print("generate new semi-pairs: %d." % len(new_pair))
+
+        train_pair = np.concatenate([train_pair, np.array(new_pair)], axis=0)
+        for e1, e2 in new_pair:
+            if e1 in rest_set_1:
+                rest_set_1.remove(e1)
+
+        for e1, e2 in new_pair:
+            if e2 in rest_set_2:
+                rest_set_2.remove(e2)
 
 
 def get_train_set(node_size, train_pair):
