@@ -18,7 +18,7 @@ SHGAT use Bert to convert attribute-literals into vectors. You should download [
 
 run python main.py. In order to improve the training efficiency, the program will first embed the literal representation of the entire KG, which will take a long time. Then start training and testing.
 
-To facilitate direct testing of this code, we provide a dataset with embedded representations [D-W-15K](https://drive.google.com/drive/folders/1CNlg6qKidPuCGp7mxXsADQOPpQziZiog?usp=sharing). After downloading and replacing the dataset D, you can directly test the operation of the model.
+To facilitate direct testing of this code, we provide a dataset with embedded representations [D-W-15K](https://drive.google.com/drive/folders/1CNlg6qKidPuCGp7mxXsADQOPpQziZiog?usp=sharing). After downloading predata/AVH.pkl and put it to d_w_15k/predata/AHV.pkl, you can directly test the operation of the model.
 
 
 > If you have any difficulty or question in running code and reproducing experimental results, please leave messages
