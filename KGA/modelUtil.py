@@ -15,6 +15,8 @@ def train(args):
 
     train_pair, dev_pair, test_pair, data, AVH = load_data(dataPath, train_ratio=0.3, dev_ratio=0.7, test_ratio=0)
 
+    edict = data.get("ent_data").get("id_entName")
+
     node_size = len(data.get("ent_data").get("id_ent"))
     rel_size = len(data.get("rel_data").get("id_rel")) * 2 - 1
     attr_size = len(data.get("attr_data").get("id_attr"))
@@ -24,9 +26,7 @@ def train(args):
     addself_matrix = data.get("all_matrix").get("addself_bi")
     index_matrix = data.get("all_matrix").get("index_bi")
     attr_matrix = data.get("attr_matrix")
-    model = ADEA(args, node_size=node_size, rel_size=rel_size, attr_size=attr_size, index_matrix=index_matrix,
-                 all_matix=addself_matrix,
-                 attr_matrix=attr_matrix)
+    model = ADEA(args, node_size=node_size, rel_size=rel_size, attr_size=attr_size)
     optimizer = tf.keras.optimizers.RMSprop(learning_rate=args.lr)
 
     rest_set_1 = [e1 for e1, e2 in dev_pair]
@@ -40,7 +40,7 @@ def train(args):
 
                 train_set = get_train_set(node_size, train_pair)
 
-                ent_emb, conc_emb = model(AVH, training=True)
+                ent_emb, conc_emb = model(AVH=AVH, index_matrix=index_matrix, all_matix=addself_matrix, attr_matrix=attr_matrix, training=True)
 
                 loss = align_loss(ent_emb, train_set) / batch_size
 
@@ -49,32 +49,33 @@ def train(args):
                 optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
             if i % 100 == 0:
-                ent_emb, _ = model(AVH, training=False)
+                ent_emb, _ = model(AVH, index_matrix=index_matrix, all_matix=addself_matrix, attr_matrix=attr_matrix, training=False)
                 CSLS_test(ent_emb, dev_pair)
+                # CSLS_test_withName(ent_emb, edict, dev_pair)
 
-        new_pair = []
-        vec, _ = model(AVH, training=False)
-        Lvec = np.array([vec[e] for e in rest_set_1])
-        Rvec = np.array([vec[e] for e in rest_set_2])
-        Lvec = Lvec / np.linalg.norm(Lvec, axis=-1, keepdims=True)
-        Rvec = Rvec / np.linalg.norm(Rvec, axis=-1, keepdims=True)
-        A, _ = eval_alignment_by_sim_mat(Lvec, Rvec, [1, 5, 10], 16, 10, True, False)
-        B, _ = eval_alignment_by_sim_mat(Rvec, Lvec, [1, 5, 10], 16, 10, True, False)
-        A = sorted(list(A))
-        B = sorted(list(B))
-        for a, b in A:
-            if B[b][1] == a:
-                new_pair.append([rest_set_1[a], rest_set_2[b]])
-        print("generate new semi-pairs: %d." % len(new_pair))
-
-        train_pair = np.concatenate([train_pair, np.array(new_pair)], axis=0)
-        for e1, e2 in new_pair:
-            if e1 in rest_set_1:
-                rest_set_1.remove(e1)
-
-        for e1, e2 in new_pair:
-            if e2 in rest_set_2:
-                rest_set_2.remove(e2)
+        # new_pair = []
+        # vec, _ = model(AVH, index_matrix=index_matrix, all_matix=addself_matrix, attr_matrix=attr_matrix,  training=False)
+        # Lvec = np.array([vec[e] for e in rest_set_1])
+        # Rvec = np.array([vec[e] for e in rest_set_2])
+        # Lvec = Lvec / np.linalg.norm(Lvec, axis=-1, keepdims=True)
+        # Rvec = Rvec / np.linalg.norm(Rvec, axis=-1, keepdims=True)
+        # A, _ = eval_alignment_by_sim_mat(Lvec, Rvec, [1, 5, 10], 16, 10, True, False)
+        # B, _ = eval_alignment_by_sim_mat(Rvec, Lvec, [1, 5, 10], 16, 10, True, False)
+        # A = sorted(list(A))
+        # B = sorted(list(B))
+        # for a, b in A:
+        #     if B[b][1] == a:
+        #         new_pair.append([rest_set_1[a], rest_set_2[b]])
+        # print("generate new semi-pairs: %d." % len(new_pair))
+        #
+        # train_pair = np.concatenate([train_pair, np.array(new_pair)], axis=0)
+        # for e1, e2 in new_pair:
+        #     if e1 in rest_set_1:
+        #         rest_set_1.remove(e1)
+        #
+        # for e1, e2 in new_pair:
+        #     if e2 in rest_set_2:
+        #         rest_set_2.remove(e2)
 
 
 def get_train_set(node_size, train_pair):

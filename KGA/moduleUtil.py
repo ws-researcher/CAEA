@@ -26,7 +26,7 @@ def scaled_dot_product_attention(q, k, v, mask):
 
 class Bert_encoder:
     def __init__(self):
-        bertPath = "./bert-base-uncased"
+        bertPath = "/data/ws/Workplace/KGA/bert-base-uncased"
         # bertPath = "/home/Edwin-01/workplace/KGAlign/KGAlign2/bert-base-uncased"
         self.tokenizer = BertTokenizer.from_pretrained(bertPath)
         self.model = TFBertModel.from_pretrained(bertPath, local_files_only=True)

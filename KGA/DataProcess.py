@@ -9,8 +9,8 @@ from moduleUtil import Bert_encoder
 
 
 def load_data(dataPath: str, train_ratio=0.3, dev_ratio=0.7, test_ratio=0):
-    id_ent1, ent_id1, id_entName1 = loadDict(os.path.join(dataPath, 'ent_ids_1'))
-    id_ent2, ent_id2, id_entName2 = loadDict(os.path.join(dataPath, 'ent_ids_2'))
+    id_ent1, ent_id1, id_entName1 = loadDict(os.path.join(dataPath, 'entN_ids_1'))
+    id_ent2, ent_id2, id_entName2 = loadDict(os.path.join(dataPath, 'entN_ids_2'))
     id_ent, ent_id, id_entName = {**id_ent1, **id_ent2}, {**ent_id1, **ent_id2}, {**id_entName1, **id_entName2}
     ent_data = dict()
     ent_data["id_ent"], ent_data["ent_id"], ent_data["id_entName"] = id_ent, ent_id, id_entName
@@ -65,16 +65,13 @@ def load_data(dataPath: str, train_ratio=0.3, dev_ratio=0.7, test_ratio=0):
               int(length * train_ratio + length * dev_ratio + length * test_ratio)]
     train_pair, dev_pair, test_pair = alignment_pair[0:splitl[1]], alignment_pair[splitl[1]: splitl[2]], alignment_pair[splitl[3]:]
 
-    saved_AV_path = os.path.join(dataPath, 'predata', "AVH.pkl")
+    saved_AV_path = os.path.join(dataPath, 'predata', "AVH0.pkl")
     AVH = None
     if os.path.exists(saved_AV_path):
         print('load saved AVH data from', saved_AV_path)
         AVH = pickle.load(open(saved_AV_path, 'rb'))
     else:
-        AVH = buildAVH(id_entName, id_attrName, ent_attr_triples, 20, isContainAttr=True)
-
-        if not os.path.exists(os.path.join(dataPath, 'predata')):
-            os.makedirs(os.path.join(dataPath, 'predata'))
+        AVH = buildAVH(id_entName, id_attrName, ent_attr_triples, 0, isContainAttr=True)
         print('save AVH data to', saved_AV_path)
         pickle.dump(AVH, open(saved_AV_path, 'wb'),protocol = 4)
 
@@ -578,6 +575,7 @@ def spilt_triples(ent_ent_triples: set, rel_id: dict):
     typeIDSet.add(rel_id.get("http://www.wikidata.org/entity/P31"))
     typeIDSet.add(rel_id.get("http://dbkwik.webdatacommons.org/memory-alpha.wikia.com/property/type"))
     typeIDSet.add(rel_id.get("http://dbkwik.webdatacommons.org/memory-beta.wikia.com/property/type"))
+    typeIDSet.add(rel_id.get("label"))
     typeIDSet.remove(None)
 
     isAtriples = set()
@@ -617,7 +615,7 @@ def buildAVH(id_entName, id_attrName, ent_attr_triples, maxAttrNum, isContainAtt
     entityNum = len(id_entName)
     EH = np.zeros((entityNum, 768), dtype=np.float32)
     for id in id_entName.keys():
-        print("entName" + str(id))
+        print("id_entName{}".format(id))
         entName = id_entName.get(id)
         entEmbedding = liter_encoder.encodeText(str(entName))
         EH[id] = entEmbedding
@@ -625,7 +623,7 @@ def buildAVH(id_entName, id_attrName, ent_attr_triples, maxAttrNum, isContainAtt
     attrNum = len(id_attrName)
     AH = np.zeros((attrNum, 768), dtype=np.float32)
     for id in id_attrName.keys():
-        print("attrName" + str(id))
+        print("id_attrName{}".format(id))
         attrName = id_attrName.get(id)
         attrEmbedding = liter_encoder.encodeText(str(attrName))
         AH[id] = attrEmbedding
@@ -639,7 +637,7 @@ def buildAVH(id_entName, id_attrName, ent_attr_triples, maxAttrNum, isContainAtt
 
         i = 0
         for ent_attr_triple in ent_attr_triples:
-            print("valus" + str(i))
+            print(i)
             en_id = int(ent_attr_triple[0])
             attr_id = int(ent_attr_triple[1])
             value = ent_attr_triple[2]
